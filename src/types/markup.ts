@@ -12,6 +12,7 @@ export type MarkupType =
   | 'ellipse'           // Ellisse / Cerchio (drag - E)
   | 'pen'               // Disegno a mano libera / Penna (P)
   | 'highlighter'       // Evidenziatore (H)
+  | 'eraser'            // Gomma (cancella annotazioni al tocco/trascinamento)
   | 'line'              // Linea semplice (L)
   | 'arrow'             // Freccia (A)
   | 'connector'         // Connettore ortogonale a spezzata automatica

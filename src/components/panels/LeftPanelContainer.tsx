@@ -125,7 +125,7 @@ export const LeftPanelContainer: React.FC = () => {
       {isOpen && (
         <div 
           style={{ width: `${panelWidth}px` }}
-          className="relative h-full bg-[#202022] border-r border-[#333333] flex flex-col overflow-hidden shadow-xl animate-in slide-in-from-left-2 duration-150"
+          className="relative shrink-0 h-full bg-[#202022] border-r border-[#333333] flex flex-col overflow-hidden shadow-xl animate-in slide-in-from-left-2 duration-150"
         >
           {activeLeftPanel === 'thumbnails' && <ThumbnailsPanel />}
           {activeLeftPanel === 'bookmarks' && <BookmarksPanel />}

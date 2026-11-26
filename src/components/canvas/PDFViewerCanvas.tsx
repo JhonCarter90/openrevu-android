@@ -1864,6 +1864,19 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
     }
 
     // 1. SELEZIONE, SPOSTAMENTO (MOVE) & GESTIONE HANDLES
+    if (activeTool === 'eraser') {
+      isErasingRef.current = true;
+      const pageIndex = getPageIndexFromEvent(e);
+      const hit = markups
+        .filter((m) => isMarkupBelongingToPane(m) && (m.pageIndex ?? 0) === pageIndex && !useAppStore.getState().lockedMarkupIds.includes(m.id))
+        .reverse()
+        .find((m) => HitTester.hitTestMarkup(rawPt, m, 10 / viewport.zoom));
+      if (hit) {
+        deleteMarkup(hit.id);
+      }
+      return;
+    }
+
     if (activeTool === 'select') {
       // A. Controlla prima se è stato cliccato un punto di presa (Handle) di un markup già selezionato
       const selectedMarkups = markups.filter(
@@ -2638,6 +2651,20 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
     if (!rawPt) return;
     lastMousePageRef.current = { pt: rawPt, pageIndex: getPageIndexFromEvent(e) };
 
+    // Gomma continua al trascinamento (penna / dito / mouse)
+    if (isErasingRef.current && activeTool === 'eraser') {
+      const pageIndex = getPageIndexFromEvent(e);
+      const hit = markups
+        .filter((m) => isMarkupBelongingToPane(m) && (m.pageIndex ?? 0) === pageIndex && !useAppStore.getState().lockedMarkupIds.includes(m.id))
+        .reverse()
+        .find((m) => HitTester.hitTestMarkup(rawPt, m, 10 / viewport.zoom));
+      if (hit) {
+        deleteMarkup(hit.id);
+      }
+      setCurrentMousePt(rawPt);
+      return;
+    }
+
     // Selezione interattiva area cartiglio AutoMark
     if (isSelectingAutoMarkRegion && autoMarkDragStart) {
       setAutoMarkDragCurrent(rawPt);
@@ -3164,6 +3191,11 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
   };
 
   const handleMouseUp = (e: React.MouseEvent) => {
+    if (isErasingRef.current) {
+      isErasingRef.current = false;
+      return;
+    }
+
     // Rilascio selezione area AutoMark (stile Bluebeam)
     if (isSelectingAutoMarkRegion && autoMarkDragStart && autoMarkDragCurrent) {
       const pageW = currentPageInfo?.width || 595;
@@ -3334,6 +3366,7 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
     }
   };
 
+  const isErasingRef = useRef<boolean>(false);
   const isDrawingFreehandCloudRef = useRef<boolean>(false);
   const activePointersRef = useRef<Map<number, { x: number; y: number; type: string }>>(new Map());
   const activePenIdRef = useRef<number | null>(null);
@@ -3382,9 +3415,9 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
   const handlePointerDown = (e: React.PointerEvent) => {
     if (e.pointerType === 'mouse') return;
 
-    // Palm rejection: scarta tocchi con area larga (palmo) o tocchi mentre la penna è poggiata
+    // Palm rejection: scarta tocchi con area molto larga (>75px = palmo) o mentre la penna è poggiata
     if (e.pointerType === 'touch') {
-      if (e.width > 26 || e.height > 26 || activePenIdRef.current !== null) {
+      if (e.width > 75 || e.height > 75 || activePenIdRef.current !== null) {
         return;
       }
     }
@@ -3454,7 +3487,7 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
     }
 
     if (e.pointerType === 'touch') {
-      if (activePenIdRef.current !== null || e.width > 26 || e.height > 26) return;
+      if (activePenIdRef.current !== null || e.width > 75 || e.height > 75) return;
       if (!activePointersRef.current.has(e.pointerId)) return;
       activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY, type: e.pointerType });
 
@@ -3762,6 +3795,8 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
     if (isPanning || isSpacePressed || activeTool === 'pan') {
       return 'cursor-grab active:cursor-grabbing';
     }
+    if (activeTool === 'eraser') return 'cursor-crosshair';
+
     if (activeTool === 'select') {
       if (isMovingMarkups) return 'cursor-grabbing';
       if (isDraggingHandle) return 'cursor-crosshair';

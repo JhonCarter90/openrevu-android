@@ -42,6 +42,7 @@ const TOOLS: ToolButton[] = [
   { id: 'arrow', label: 'Freccia (A)', iconName: 'arrow' },
   { id: 'pen', label: 'Penna a Mano Libera (P)', iconName: 'pen' },
   { id: 'highlighter', label: 'Evidenziatore (H)', iconName: 'highlighter' },
+  { id: 'eraser', label: 'Gomma - Tocca o trascina per cancellare', iconName: 'eraser' },
   
   // Misure & Takeoff (Icone Originali Bluebeam)
   { id: 'measure_length', label: 'Quota Lineare (M / Shift+Alt+L)', iconName: 'measure_length' },

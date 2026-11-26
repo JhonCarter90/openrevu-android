@@ -26,6 +26,7 @@ export class PDFManager {
 
   private static instance: PDFManager;
   private docs: Map<string, pdfjsLib.PDFDocumentProxy> = new Map();
+  private docDataRefs: Map<string, ArrayBuffer | Uint8Array> = new Map();
   private activeRenderTasks: Map<string, pdfjsLib.RenderTask> = new Map();
 
   private constructor() {}
@@ -85,6 +86,7 @@ export class PDFManager {
 
     // Copia sicura dei byte per prevenire detaching da parte del Web Worker di PDF.js
     const uint8 = data instanceof Uint8Array ? data : new Uint8Array(data);
+    this.docDataRefs.set(docId, data);
     const dataCopy = uint8.slice(0);
     const pdfLibBytes = uint8.slice(0);
 
@@ -202,8 +204,9 @@ export class PDFManager {
     docId: string,
     data: ArrayBuffer | Uint8Array
   ): Promise<pdfjsLib.PDFDocumentProxy> {
-    const existing = this.docs.get(docId) || (this.docs.size > 0 ? Array.from(this.docs.values())[0] : null);
-    if (existing) {
+    const existing = this.docs.get(docId);
+    const prevData = this.docDataRefs.get(docId);
+    if (existing && prevData === data) {
       return existing;
     }
     const res = await this.loadDocument(data, docId);
