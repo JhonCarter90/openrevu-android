@@ -88,7 +88,21 @@ function rotateViewportBox(
 function rotateMarkupForPage(m: AnyMarkup, oldW: number, oldH: number, deltaDeg: number): AnyMarkup {
   const clone: any = { ...m };
   if (clone.boxRect) {
-    clone.boxRect = rotateViewportBox(clone.boxRect, oldW, oldH, deltaDeg);
+    if (clone.type === 'stamp') {
+      // Per foto e timbri manteniamo intatte le proporzioni (width/height) e ruotiamo centro + angolo rotation
+      const oldCx = clone.boxRect.x + clone.boxRect.width / 2;
+      const oldCy = clone.boxRect.y + clone.boxRect.height / 2;
+      const newCenter = rotateViewportPoint({ x: oldCx, y: oldCy }, oldW, oldH, deltaDeg);
+      clone.boxRect = {
+        x: newCenter.x - clone.boxRect.width / 2,
+        y: newCenter.y - clone.boxRect.height / 2,
+        width: clone.boxRect.width,
+        height: clone.boxRect.height,
+      };
+      clone.rotation = (((clone.rotation || 0) + deltaDeg) % 360 + 360) % 360;
+    } else {
+      clone.boxRect = rotateViewportBox(clone.boxRect, oldW, oldH, deltaDeg);
+    }
   }
   if (clone.startPoint) {
     clone.startPoint = rotateViewportPoint(clone.startPoint, oldW, oldH, deltaDeg);

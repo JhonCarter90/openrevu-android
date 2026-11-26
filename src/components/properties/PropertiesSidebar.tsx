@@ -59,6 +59,37 @@ export const PropertiesSidebar: React.FC = () => {
     currentUser,
   } = useAppStore();
 
+  const [panelWidth, setPanelWidth] = React.useState<number>(270);
+  const isDraggingRef = React.useRef(false);
+
+  const handlePointerDownResize = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const target = e.currentTarget;
+    target.setPointerCapture(e.pointerId);
+    isDraggingRef.current = true;
+    const startX = e.clientX;
+    const startW = panelWidth;
+
+    const onPointerMove = (moveEvent: PointerEvent) => {
+      if (!isDraggingRef.current) return;
+      const delta = startX - moveEvent.clientX;
+      const newW = Math.max(190, Math.min(560, startW + delta));
+      setPanelWidth(newW);
+    };
+
+    const onPointerUp = () => {
+      isDraggingRef.current = false;
+      target.removeEventListener('pointermove', onPointerMove);
+      target.removeEventListener('pointerup', onPointerUp);
+      target.removeEventListener('pointercancel', onPointerUp);
+    };
+
+    target.addEventListener('pointermove', onPointerMove);
+    target.addEventListener('pointerup', onPointerUp);
+    target.addEventListener('pointercancel', onPointerUp);
+  };
+
   const isOpen = activeRightPanel !== 'none';
   const selectedMarkup = markups.find((m) => selectedMarkupIds.includes(m.id));
   const isLocked = selectedMarkup ? lockedMarkupIds.includes(selectedMarkup.id) : false;
@@ -101,9 +132,19 @@ export const PropertiesSidebar: React.FC = () => {
 
   return (
     <div className="flex h-full z-20 shrink-0 select-none">
-      {/* Cassetto Contenuto Proprietà (Width 270px) */}
+      {/* Cassetto Contenuto Proprietà ridimensionabile */}
       {isOpen && (
-        <aside className="w-[270px] bg-[#222225] border-l border-[#333333] flex flex-col text-xs shadow-2xl animate-in slide-in-from-right-2 duration-150">
+        <aside
+          style={{ width: `${panelWidth}px` }}
+          className="relative bg-[#222225] border-l border-[#333333] flex flex-col text-xs shadow-2xl animate-in slide-in-from-right-2 duration-150"
+        >
+          {/* Maniglia splitter ridimensionamento a sinistra */}
+          <div
+            onPointerDown={handlePointerDownResize}
+            style={{ touchAction: 'none' }}
+            className="absolute top-0 left-0 w-2.5 h-full cursor-col-resize hover:bg-[#0078d4]/70 active:bg-[#0078d4] transition z-30"
+            title="Trascina per allargare o stringere il pannello proprietà"
+          />
           {/* Intestazione Pannello */}
           <div className="h-9 px-3 bg-[#1a1a1c] border-b border-[#333333] flex items-center justify-between font-bold text-white shrink-0">
             <div className="flex items-center space-x-1.5 truncate">

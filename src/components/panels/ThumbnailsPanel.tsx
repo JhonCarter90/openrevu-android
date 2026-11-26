@@ -62,7 +62,7 @@ const ThumbnailCard: React.FC<ThumbnailCardProps> = ({
         await pdfManager.ensureDocumentLoaded(docId, fileBytes);
         if (!isMounted || !canvasRef.current) return;
 
-        const thumbScale = 140 / Math.max(width, 100);
+        const thumbScale = 140 / Math.max(width, height, 100);
         handle = pdfManager.renderPage(
           canvasRef.current,
           pageNumber,
@@ -102,8 +102,8 @@ const ThumbnailCard: React.FC<ThumbnailCardProps> = ({
           : 'bg-[#1e1e1e] border-[#333333] hover:border-[#555] hover:bg-[#282829]'
       }`}
     >
-      <div className="relative bg-white shadow rounded overflow-hidden flex items-center justify-center min-h-[90px] w-full">
-        <canvas ref={canvasRef} className="block max-w-full h-auto mx-auto" />
+      <div className="relative bg-white shadow rounded overflow-hidden flex items-center justify-center min-h-[90px] max-h-[170px] w-full p-1">
+        <canvas ref={canvasRef} className="block max-w-full max-h-[160px] w-auto h-auto object-contain mx-auto" />
         {(isActive || isSelected) && (
           <div className="absolute top-1 right-1 bg-[#0078d4] text-white rounded-full p-0.5 shadow">
             <CheckCircle2 size={12} />

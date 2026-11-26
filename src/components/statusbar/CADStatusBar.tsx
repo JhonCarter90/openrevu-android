@@ -29,8 +29,6 @@ export const CADStatusBar: React.FC = () => {
     scaleCalibration,
     snapEnabled,
     setSnapEnabled,
-    mouseWheelMode,
-    toggleMouseWheelMode,
     viewport,
     setViewport,
     resetViewport,
@@ -69,9 +67,9 @@ export const CADStatusBar: React.FC = () => {
   };
 
   return (
-    <footer className="h-8 bg-[#0f0f10] border-t border-white/[0.08] grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 text-[11px] text-[#85858b] select-none z-40 shrink-0 font-sans">
+    <footer className="h-9 bg-[#0f0f10] border-t border-white/[0.08] flex items-center justify-between gap-3 px-3 text-[11px] text-[#85858b] select-none z-40 shrink-0 font-sans overflow-x-auto whitespace-nowrap">
       {/* 1. SINISTRA: Modalità Pagina + Divisione Schermo */}
-      <div className="flex items-center justify-start gap-2 min-w-0">
+      <div className="flex items-center justify-start gap-2 shrink-0">
         {/* Pagina Singola / Continue */}
         <div className="flex items-center bg-[#19191b] rounded-md border border-white/[0.08] p-0.5 gap-0.5">
           <button
@@ -159,7 +157,7 @@ export const CADStatusBar: React.FC = () => {
       </div>
 
       {/* 2. CENTRO: Strumenti Rapidi + Navigazione Pagine */}
-      <div className="flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center gap-2 shrink-0">
         <div className="flex items-center bg-[#19191b] rounded-md border border-white/[0.08] p-0.5 gap-0.5">
           <button
             type="button"
@@ -263,16 +261,16 @@ export const CADStatusBar: React.FC = () => {
         )}
       </div>
 
-      {/* 3. DESTRA: Formato Pagina, Scala, Rotellina, Snap e Zoom */}
-      <div className="flex items-center justify-end gap-2 min-w-0">
-        <div className="hidden md:flex items-center gap-1.5 text-[#a1a1a6]" title="Dimensioni foglio della pagina corrente">
+      {/* 3. DESTRA: Formato Pagina, Scala, Snap e Zoom */}
+      <div className="flex items-center justify-end gap-2 shrink-0">
+        <div className="hidden md:flex items-center gap-1.5 text-[#a1a1a6] shrink-0" title="Dimensioni foglio della pagina corrente">
           <FileText size={13} strokeWidth={1.5} className="text-[#85858b]" />
           <span className="font-mono tabular-nums text-[#ededed]">{getPageFormatString()}</span>
         </div>
 
         <div className="hidden md:block h-4 w-px bg-white/[0.08]" />
 
-        <div className="hidden lg:flex items-center gap-1.5">
+        <div className="hidden lg:flex items-center gap-1.5 shrink-0">
           <Ruler size={13} strokeWidth={1.5} className="text-[#85858b]" />
           <span className={scaleCalibration ? 'text-[#4cc38a] font-mono tabular-nums font-medium' : 'text-[#85858b] font-mono'}>
             {scaleCalibration ? `1 : ${scaleCalibration.scaleRatio.toFixed(0)} (${scaleCalibration.unit})` : 'Scala non impostata'}
@@ -280,19 +278,6 @@ export const CADStatusBar: React.FC = () => {
         </div>
 
         <div className="hidden lg:block h-4 w-px bg-white/[0.08]" />
-
-        <button
-          type="button"
-          onClick={toggleMouseWheelMode}
-          className={`flex items-center gap-1 px-2 py-0.5 rounded-md transition-colors border cursor-pointer ${
-            mouseWheelMode === 'zoom'
-              ? 'bg-[#232325] border-[#2563eb]/60 text-[#ededed] font-medium'
-              : 'bg-[#19191b] border-white/[0.08] text-[#85858b] hover:text-[#ededed]'
-          }`}
-          title="Cambia comportamento rotellina mouse (Zoom o Scorrimento)"
-        >
-          <span>Rotella: <strong className="font-medium text-[#ededed]">{mouseWheelMode === 'zoom' ? 'Zoom' : 'Scorri'}</strong></span>
-        </button>
 
         <button
           type="button"

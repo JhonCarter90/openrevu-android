@@ -2282,6 +2282,12 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
     }
 
     // 7. STRUMENTI MULTIPUNTO (Polilinea, Poligono, Nuvoletta, Misure)
+    if (activeTool === 'cloud' && drawingPoints.length === 0) {
+      isDrawingFreehandCloudRef.current = true;
+      setDrawingPoints([pt]);
+      return;
+    }
+
     let nextPt = pt;
     if (drawingPoints.length >= 1) {
       const lastPt = drawingPoints[drawingPoints.length - 1];
@@ -2641,6 +2647,19 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
     // Disegno a mano libera (Penna / Evidenziatore)
     if (isDrawingFreehand) {
       setFreehandPoints((prev) => [...prev, rawPt]);
+      setCurrentMousePt(rawPt);
+      return;
+    }
+
+    // Nuvola di revisione continua seguendo dito/penna
+    if (isDrawingFreehandCloudRef.current && activeTool === 'cloud') {
+      setDrawingPoints((prev) => {
+        const last = prev[prev.length - 1];
+        if (!last || Math.hypot(rawPt.x - last.x, rawPt.y - last.y) >= 14) {
+          return [...prev, rawPt];
+        }
+        return prev;
+      });
       setCurrentMousePt(rawPt);
       return;
     }
@@ -3257,6 +3276,14 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
       return;
     }
 
+    if (isDrawingFreehandCloudRef.current && activeTool === 'cloud') {
+      isDrawingFreehandCloudRef.current = false;
+      if (drawingPoints.length >= 3) {
+        finishMultiPointDrawing();
+      }
+      return;
+    }
+
     if (isDrawingDrag && dragStartPt) {
       const rawPt = getPdfPointFromEvent(e);
       if (rawPt) {
@@ -3307,6 +3334,12 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
     }
   };
 
+  const isDrawingFreehandCloudRef = useRef<boolean>(false);
+  const activePointersRef = useRef<Map<number, { x: number; y: number; type: string }>>(new Map());
+  const activePenIdRef = useRef<number | null>(null);
+  const lastPenTimeRef = useRef<number>(0);
+  const singleTouchPanRef = useRef<{ pointerId: number; startX: number; startY: number; startPanX: number; startPanY: number } | null>(null);
+  const lastDrawStartTimeRef = useRef<number>(0);
   const touchPinchRef = useRef<{
     active: boolean;
     startDist: number;
@@ -3317,10 +3350,10 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
     startPanY: number;
   } | null>(null);
 
-  const buildSyntheticMouseEvent = (touch: React.Touch): React.MouseEvent =>
+  const buildSyntheticMouseEvent = (clientX: number, clientY: number): React.MouseEvent =>
     ({
-      clientX: touch.clientX,
-      clientY: touch.clientY,
+      clientX,
+      clientY,
       button: 0,
       buttons: 1,
       shiftKey: false,
@@ -3331,13 +3364,54 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
       stopPropagation: () => {},
     }) as unknown as React.MouseEvent;
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length === 2) {
-      const t1 = e.touches[0];
-      const t2 = e.touches[1];
-      const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-      const midX = (t1.clientX + t2.clientX) / 2;
-      const midY = (t1.clientY + t2.clientY) / 2;
+  const cancelInProgressMicroDraw = () => {
+    isDrawingFreehandCloudRef.current = false;
+    if (isDrawingFreehand) {
+      setIsDrawingFreehand(false);
+      setFreehandPoints([]);
+    }
+    if (isDrawingDrag) {
+      setIsDrawingDrag(false);
+      setDragStartPt(null);
+    }
+    if (drawingPoints.length > 0 && Date.now() - lastDrawStartTimeRef.current < 300) {
+      setDrawingPoints([]);
+    }
+  };
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === 'mouse') return;
+
+    // Palm rejection: scarta tocchi con area larga (palmo) o tocchi mentre la penna è poggiata
+    if (e.pointerType === 'touch') {
+      if (e.width > 26 || e.height > 26 || activePenIdRef.current !== null) {
+        return;
+      }
+    }
+
+    if (e.pointerType === 'pen') {
+      activePenIdRef.current = e.pointerId;
+      lastPenTimeRef.current = Date.now();
+      singleTouchPanRef.current = null;
+      touchPinchRef.current = null;
+      lastDrawStartTimeRef.current = Date.now();
+      handleMouseDown(buildSyntheticMouseEvent(e.clientX, e.clientY));
+      return;
+    }
+
+    // Touch valido (dito)
+    activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY, type: e.pointerType });
+    const touchPts = Array.from(activePointersRef.current.values()).filter((p) => p.type === 'touch');
+
+    if (touchPts.length >= 2) {
+      // 2 dita -> Pinch-to-Zoom + Pan (annulla eventuale micro-disegno appena iniziato dal 1° dito)
+      cancelInProgressMicroDraw();
+      singleTouchPanRef.current = null;
+      const t1 = touchPts[0];
+      const t2 = touchPts[1];
+      const dist = Math.hypot(t2.x - t1.x, t2.y - t1.y);
+      const midX = (t1.x + t2.x) / 2;
+      const midY = (t1.y + t2.y) / 2;
       touchPinchRef.current = {
         active: true,
         startDist: Math.max(10, dist),
@@ -3349,51 +3423,107 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
       };
       return;
     }
-    if (e.touches.length === 1 && !touchPinchRef.current?.active) {
-      handleMouseDown(buildSyntheticMouseEvent(e.touches[0]));
+
+    if (touchPts.length === 1 && !touchPinchRef.current?.active) {
+      // Se si sta usando la Focus Pen (negli ultimi 6s) e lo strumento attivo disegna, 1 dito fa PAN invece di scarabocchiare
+      const penUsedRecently = Date.now() - lastPenTimeRef.current < 6000;
+      if (penUsedRecently && activeTool !== 'select' && activeTool !== 'select_text') {
+        singleTouchPanRef.current = {
+          pointerId: e.pointerId,
+          startX: e.clientX,
+          startY: e.clientY,
+          startPanX: viewport.panX,
+          startPanY: viewport.panY,
+        };
+        return;
+      }
+      lastDrawStartTimeRef.current = Date.now();
+      handleMouseDown(buildSyntheticMouseEvent(e.clientX, e.clientY));
     }
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (e.touches.length === 2 && touchPinchRef.current?.active && containerRef.current) {
-      const t1 = e.touches[0];
-      const t2 = e.touches[1];
-      const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-      const midX = (t1.clientX + t2.clientX) / 2;
-      const midY = (t1.clientY + t2.clientY) / 2;
-      const rect = containerRef.current.getBoundingClientRect();
-      const pinch = touchPinchRef.current;
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (e.pointerType === 'mouse') return;
 
-      const scaleFactor = dist / pinch.startDist;
-      const nextZoom = Math.min(24.0, Math.max(0.2, pinch.startZoom * scaleFactor));
-      const zoomRatio = nextZoom / pinch.startZoom;
-
-      const anchorX = pinch.startMidX - rect.left;
-      const anchorY = pinch.startMidY - rect.top;
-      const deltaMidX = midX - pinch.startMidX;
-      const deltaMidY = midY - pinch.startMidY;
-
-      const nextPanX = anchorX - (anchorX - pinch.startPanX) * zoomRatio + deltaMidX;
-      const nextPanY = anchorY - (anchorY - pinch.startPanY) * zoomRatio + deltaMidY;
-
-      setViewport({ zoom: nextZoom, panX: nextPanX, panY: nextPanY });
+    if (e.pointerType === 'pen') {
+      lastPenTimeRef.current = Date.now();
+      if (activePenIdRef.current === e.pointerId || e.buttons > 0) {
+        handleMouseMove(buildSyntheticMouseEvent(e.clientX, e.clientY));
+      }
       return;
     }
-    if (e.touches.length === 1 && !touchPinchRef.current?.active) {
-      handleMouseMove(buildSyntheticMouseEvent(e.touches[0]));
+
+    if (e.pointerType === 'touch') {
+      if (activePenIdRef.current !== null || e.width > 26 || e.height > 26) return;
+      if (!activePointersRef.current.has(e.pointerId)) return;
+      activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY, type: e.pointerType });
+
+      const touchPts = Array.from(activePointersRef.current.values()).filter((p) => p.type === 'touch');
+      if (touchPts.length >= 2 && touchPinchRef.current?.active && containerRef.current) {
+        const t1 = touchPts[0];
+        const t2 = touchPts[1];
+        const dist = Math.hypot(t2.x - t1.x, t2.y - t1.y);
+        const midX = (t1.x + t2.x) / 2;
+        const midY = (t1.y + t2.y) / 2;
+        const rect = containerRef.current.getBoundingClientRect();
+        const pinch = touchPinchRef.current;
+
+        const scaleFactor = dist / pinch.startDist;
+        const nextZoom = Math.min(24.0, Math.max(0.2, pinch.startZoom * scaleFactor));
+        const zoomRatio = nextZoom / pinch.startZoom;
+
+        const anchorX = pinch.startMidX - rect.left;
+        const anchorY = pinch.startMidY - rect.top;
+        const deltaMidX = midX - pinch.startMidX;
+        const deltaMidY = midY - pinch.startMidY;
+
+        const nextPanX = anchorX - (anchorX - pinch.startPanX) * zoomRatio + deltaMidX;
+        const nextPanY = anchorY - (anchorY - pinch.startPanY) * zoomRatio + deltaMidY;
+
+        setViewport({ zoom: nextZoom, panX: nextPanX, panY: nextPanY });
+        return;
+      }
+
+      if (singleTouchPanRef.current && singleTouchPanRef.current.pointerId === e.pointerId) {
+        const p = singleTouchPanRef.current;
+        setViewport({
+          panX: p.startPanX + (e.clientX - p.startX),
+          panY: p.startPanY + (e.clientY - p.startY),
+        });
+        return;
+      }
+
+      if (touchPts.length === 1 && !touchPinchRef.current?.active) {
+        handleMouseMove(buildSyntheticMouseEvent(e.clientX, e.clientY));
+      }
     }
   };
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
+  const handlePointerUpOrCancel = (e: React.PointerEvent) => {
+    if (e.pointerType === 'mouse') return;
+
+    if (e.pointerType === 'pen') {
+      if (activePenIdRef.current === e.pointerId) {
+        activePenIdRef.current = null;
+      }
+      lastPenTimeRef.current = Date.now();
+      handleMouseUp(buildSyntheticMouseEvent(e.clientX, e.clientY));
+      return;
+    }
+
+    activePointersRef.current.delete(e.pointerId);
+    if (singleTouchPanRef.current?.pointerId === e.pointerId) {
+      singleTouchPanRef.current = null;
+      return;
+    }
     if (touchPinchRef.current?.active) {
-      if (e.touches.length < 2) {
+      const touchPts = Array.from(activePointersRef.current.values()).filter((p) => p.type === 'touch');
+      if (touchPts.length < 2) {
         touchPinchRef.current = null;
       }
       return;
     }
-    if (e.changedTouches.length > 0) {
-      handleMouseUp(buildSyntheticMouseEvent(e.changedTouches[0]));
-    }
+    handleMouseUp(buildSyntheticMouseEvent(e.clientX, e.clientY));
   };
 
   // Doppio Clic: Modifica testo inline
@@ -3825,10 +3955,10 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchEnd}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUpOrCancel}
+        onPointerCancel={handlePointerUpOrCancel}
         onDoubleClick={handleDoubleClick}
         style={{ touchAction: 'none' }}
         onContextMenu={(e) => {

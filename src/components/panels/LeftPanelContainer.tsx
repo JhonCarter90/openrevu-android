@@ -58,28 +58,33 @@ export const LeftPanelContainer: React.FC = () => {
 
   const isOpen = activeLeftPanel !== 'none';
 
-  // Gestione trascinamento ridimensionamento splitter
-  const handleMouseDownResize = (e: React.MouseEvent) => {
+  // Gestione trascinamento ridimensionamento splitter (supporta mouse, penna e touch)
+  const handlePointerDownResize = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.stopPropagation();
+    const target = e.currentTarget;
+    target.setPointerCapture(e.pointerId);
     isDraggingRef.current = true;
     const startX = e.clientX;
     const startW = panelWidth;
 
-    const onMouseMove = (moveEvent: MouseEvent) => {
+    const onPointerMove = (moveEvent: PointerEvent) => {
       if (!isDraggingRef.current) return;
       const delta = moveEvent.clientX - startX;
-      const newW = Math.max(200, Math.min(650, startW + delta));
+      const newW = Math.max(180, Math.min(650, startW + delta));
       setPanelWidth(newW);
     };
 
-    const onMouseUp = () => {
+    const onPointerUp = () => {
       isDraggingRef.current = false;
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
+      target.removeEventListener('pointermove', onPointerMove);
+      target.removeEventListener('pointerup', onPointerUp);
+      target.removeEventListener('pointercancel', onPointerUp);
     };
 
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
+    target.addEventListener('pointermove', onPointerMove);
+    target.addEventListener('pointerup', onPointerUp);
+    target.addEventListener('pointercancel', onPointerUp);
   };
 
   return (
@@ -131,8 +136,9 @@ export const LeftPanelContainer: React.FC = () => {
 
           {/* Maniglia splitter ridimensionamento a destra */}
           <div
-            onMouseDown={handleMouseDownResize}
-            className="absolute top-0 right-0 w-1.5 h-full cursor-col-resize hover:bg-[#0078d4] active:bg-[#0078d4] transition z-30"
+            onPointerDown={handlePointerDownResize}
+            style={{ touchAction: 'none' }}
+            className="absolute top-0 right-0 w-2.5 h-full cursor-col-resize hover:bg-[#0078d4]/70 active:bg-[#0078d4] transition z-30"
             title="Trascina per allargare o stringere la paletta"
           />
         </div>
