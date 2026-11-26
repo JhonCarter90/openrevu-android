@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BluebeamRevuToolSet Version="1">
+  <Title>789c0b4a2dcb2ccecccf4b554849cdc9514f2c4acec82c492d29c907007ddc09d4</Title>
+  <ToolChestItem Version="2">
+    <Name>QRGOYETREOFCJYJO</Name>
+    <Type>Bluebeam.PDF.Annotations.AnnotationPolygon</Type>
+    <Raw>789c6d505d6f823014fd2b7ddc5eb82d22658921a1e0145446a06e66c407878d76a942b024f2ef57c83e5e76efcb3de7dcefd90c620e59adfa537d0d55dd1d0d9edf47868bbb8657d16a59895b49a616711d8f228a2dcf71a6e897f80b8608dbde3fcc77d11e9ea5522fcda192ba47d872806d60d3292d1bd543d17d7c3e046d75965a54fa11b8b8343987455b77cd086283d224784fc26d9215bb5590acd6a330a6a4e2a6e5f5941e2e0216d136676b9e2c73ce7651940dbd75df889f532137134a8c3022136cd92ea5c8732d8c9f26d4ec881c084b6244bc0756981fbd210285713eb460757b14adef039b1ba980106264fbc6be007c0360a5</Raw>
+    <X>15.1649</X>
+    <Y>-24.71643</Y>
+    <Index>0</Index>
+    <Child>
+      <Type>Bluebeam.PDF.Annotations.AnnotationFreeText</Type>
+      <Raw>789ca5925d6f82301486ff4a93dd40165b2a1f016696f0315434ce006666840b8615bb544a585df4dfaff56259e276b573d29bf7ed734e4e4f271314071a0686cca1056846d827c06350ec75342f5032105290b3886ac6f84948e9e98cd69c5d9488e25cdbf34ef8405144d0a696682f1e8090eea866b4ed7c46f65238d6434b3bdf5426a31d191d086d0fc2c7267495d670c607ff2e490c193acae2d21e43cb706d0bd8d0be1eec41d7c1a657a168592ac1f4a0e3606c02730c1dc3b53c806d687a9e2b992bfc43a950418e7d18f273a926c5ae093d591d5836c4aa468512cad8735f37545c80012d949fdedeb5480ebdbbd7aff0aa3e92798c5669f09a469b749d6f1741ba585ebde9c04ffd8a7c08dab5a5160ccd810a2204d76faf4fe34d162e8b749615e1368ed7d54d01d5e817ee3f2de430e2d293ef75a28c34e2cf9700168aca0a85b9fc1c2fc040b9cc42e1211f76647894f105e7c3a90a</Raw>
+      <X>-100.8294</X>
+      <Y>5.5</Y>
+      <Index>1</Index>
+    </Child>
+    <Mode>properties</Mode>
+  </ToolChestItem>
+  <ToolChestItem Version="1">
+    <Name>AQQEDGQEWPZTPYWL</Name>
+    <Type>Bluebeam.PDF.Annotations.AnnotationFreeText</Type>
+    <Raw>789cad52c16edb300cfd15c1bb388788925d6c8de6b8881318eba945126c87a207c5616c0db265c84ae2f4eb2725c8a1c0761b79222992ef3d2acb60b5883961de6d4de007ea13e109d91e26b0dac407d3394142129daaa4aff4ee3b7138baa9d4aaee84c6834fb4d2d6aa132c14b5ea70daa0aa1b27784a1f43ae32da58f1a52c99b7096cb1ed8bc28c6f612b9f7da5294b384953ca197fe4ef502aad5f7a592977218c3ec07a19674f63abc909eda04c378f3865d1539eedccfe427ca11bc47890f3a871ae1700e7f399fa981a5bc35035d84af0e1742f9d04df0911f1a1a83c37ecdcf6d2e33c0a94a071adbed516afcf3fefbb0a7dc41dcaf67555aef1741409e3df28f3986f4f871eab7994d0c4432283bb683fed2adbff552dbaf1fcc4f19c5e29f2d96c06e3157c9ef5770c9fbaffbe20c09c0eea03454018e54bd3b65e1193419f6710c4cd27b039ee7ec70b5b35caa173e69a705e33282de236c8b6c6cafdeb94cb9bc8437c9f3d81923cc0f2ed1d8a8dff7cbf08838df77005288cdda3cdbdfd0195c6d271</Raw>
+    <X>0</X>
+    <Y>0</Y>
+    <Index>3</Index>
+    <Mode>properties</Mode>
+  </ToolChestItem>
+  <ToolChestItem Version="1">
+    <Name>FWLNDGTCSDUQYRAF</Name>
+    <Type>Bluebeam.PDF.Annotations.AnnotationInk</Type>
+    <Raw>789c4591bd4e43310c855fc563bb388eed38b18490da22a44ab0502486ab0efc54a250daaadc0ebc3d0e0c4da61c7fce3996afaed272ff79b7fd1e87213316e08a54ac423cbc361260c3c64c0c59d045a9752513d5600a362d1e4d8a66d642a958b238030b562672c88e4e4ac13092b2b65e6225afbd649643886f4c6be9ddeec20edcd0ad754fc3ea4a15845148dcbaa7587390824ae60db262b6a0411a16f2481c41b5d4f0d68c967324fe1bc6c9401559b45957aa94da400da5f13f5328e7601ab24b4c75511cb569968b5208998c2ecc7a9de6f7e9febc1bb7c7dd4f5acc80b0a4d5f9e563323bbdbe6fc7cd381ea669be5a2e0ebbf3d7fee6797c1e26d37ed71d1b7f8e9bbe89f4b0791d0702028b8405c4b1189775ba054d8b214781c26a157b7b0af3b48afbd87be787d3dbe6741de717ab72697f</Raw>
+    <X>12.49902</X>
+    <Y>12.50104</Y>
+    <Index>87</Index>
+    <Mode>properties</Mode>
+  </ToolChestItem>
+  <ToolChestItem Version="1">
+    <Name>YBHLTYGYVMCATFSX</Name>
+    <Type>Bluebeam.PDF.Annotations.AnnotationLine</Type>
+    <Raw>789c3d8e410b82401085ffca1cebe2ec96ab1e244829102442850e8b977440435cd956a27fdf68d4cc6d98efbd2f8e313f69bc9891301dcc93daa3b5e65563966a0902448de56026aade1381c06bef9aae9847903bcc2accfb91d67fccb5020552084f05fe1e02e545a19211d3f3fdb139daa6eb1d3967b6cbc171d8ca62418dd3dcc2a4fa92a1f89167f0f12f91946c7a038ec79277d1c1c4d896ec81e70321ae394a</Raw>
+    <X>5</X>
+    <Y>5</Y>
+    <Index>5</Index>
+    <Mode>properties</Mode>
+  </ToolChestItem>
+  <ToolChestItem Version="1">
+    <Name>INHFCFBPUYYOUOFL</Name>
+    <Type>Bluebeam.PDF.Annotations.AnnotationCircle</Type>
+    <Raw>789c754fcb0e823010fc951ef5c2827ac0c498d0fa08a04579a41ac241b1d11a10526b227f6f698c37672e3b99ddd9ddd90c7c923bc8467601f142578605a4bc6e316edeb976d0d8b56c8de9b770dc0256a2aaa2f6540ad521db9a40f23adf079e2c6f42f1520dcd7c9cc25a36afd6085fab300829db6316614248961d8c615a287f2af1b8d253cd21c5ec48190d9278bbdb78cba0cf565dcb810859561c62bde0ef596802bf7f70a2df6368048966da27e0465eb89c6b7c0051e248cd</Raw>
+    <X>1</X>
+    <Y>1</Y>
+    <Index>3</Index>
+    <Child>
+      <Type>Bluebeam.PDF.Annotations.AnnotationFreeText</Type>
+      <Raw>789ca591d14fc23010c6ff9526be8c07d6cd2d060731a143d4a143d9c834640f731c5b4db72ee520f0dfdb826fe893772fcd77fdf5bbeb8d467432b65ce2e85415a18f20f6c4bd26e9a6472789b5912d06c48880bc2c74a5c321413860bf10bc6a83125a04f523edcf5ac3d76b0143d214aae26de01844f016fa35f0aac6c0f5ec81d14a29a40aae9c53f4680a4dc7983cac4c2fde8d6dd45be2f9e6e00e723ae542ccbba2e478248eedd364f7f965a5da9768e88cc745034f133a8b6671f6c6b2390bc370b97c3fd51e94dc75316c91b7d5ca1aabb2e60888b2f7cb75967dc4591c258b97d7e7f17d945f3c608c2eb97f59e871f0d8019d2a0033155d40897ffe05f169b8ca294bf40233e2d044676a7026d51ad49d8e6f88ed9510</Raw>
+      <X>-3.051758E-05</X>
+      <Y>-1.000031</Y>
+      <Index>4</Index>
+    </Child>
+    <Mode>drawing</Mode>
+    <Sequence>
+      <Enabled>True</Enabled>
+      <Style>Number</Style>
+      <Start>1</Start>
+      <Increment>1</Increment>
+      <ResetMode>Document</ResetMode>
+      <Renumber>True</Renumber>
+      <ID>MAGTNTFCJYFSHTZK</ID>
+    </Sequence>
+  </ToolChestItem>
+  <ToolChestItem Version="1">
+    <Name>RQTNPHHPBNRGYUBS</Name>
+    <Type>Bluebeam.PDF.Annotations.AnnotationPolygon</Type>
+    <Raw>789c6d8f310f82301085ffca8dbaf4da6b11480889104d98344274200c0a8d6288255806febd6580c9bbe5f2bddccb7b5184598167d34d4ff3493b333678d5836d6bfd2d85c7a4276807a164814f9c6025eb4192989281f84396af0a8f6dd79dfa7bddda093853988f8ff7663fd4afd66a6bcd760676eaf592032fbab625070ea47ce607a102c1434624a533038569299cc82b4c7257e0060273b7c56c9198a1d1431c637270528e296640b19b1fe5f13ebc</Raw>
+    <X>17.73944</X>
+    <Y>17.7392</Y>
+    <Index>0</Index>
+    <Mode>properties</Mode>
+  </ToolChestItem>
+  <ToolChestItem Version="1">
+    <Name>VFFZOEUQBEIQILSU</Name>
+    <Type>Bluebeam.PDF.Annotations.AnnotationFreeText</Type>
+    <Raw>789c75904f6bc3300cc5bf8a6097f650cb4e9c3fcbcaa069173628149ac00e21872c53530f370ec6ddda6f3f87b2dea6872e3f3d09f4964bdcac6602b897ed015f497f8308a03accf1adc2c212557471eb566b7376b829670733b80c261f39d5b5de3cba2770deb468b5ea874cd3c183536b7b35647c1a6a35d0e248aa3fba4c842c9d5867b4b1d94351705f73dc6fea58b0344d130812c6232925442c9abac1f5b60e0216c8508a3f0861c81ebd4bc06d2d4eeea4c18a4e639e9b4b3d7d2552ce441c0b90310b2319260d6e5f7037d2b0b2d6fc60a1b4de8d6da7dc153893589e3fbe662bdb1d9523e7cc7c02ee3ad23d0bdc53e7fe3b5d80c475dd605efa64df8163e9554debb9b19f649f7dfd02d9a6698f</Raw>
+    <X>5.5</X>
+    <Y>5.5</Y>
+    <Index>4</Index>
+    <Mode>properties</Mode>
+  </ToolChestItem>
+  <ToolChestItem Version="1">
+    <Name>JMWJOBLTCTUEDRIP</Name>
+    <Type>Bluebeam.PDF.Annotations.AnnotationLine</Type>
+    <Raw>789c3d505d6bc3300cfc2b82bd740fb5e2b84993b40cd68fb0421e4653d843c843e6698d4766075719dbbf9fdbc1243881384e775aafb1da37580fdda5ffc3160fdb464204518b5505320ab88718b7dd08ec270a2c37d2e9672488f0d9b0ee8f930519e3e18495b1b4339f642fc659ac1a29452c65a220110948998b2c550a542cf22c5b2e5bdcd5b37767b980271abe888dee82d0c82b60fae6793798b32d345926bf822168cf7b32e79e0ba94476a56937385fdc956514ea1eebe9f563f6e8756f9898dd6dc1c1e8cd171e497313628513a99069be80240953a9bcc51216f89f7a5387afbc80c43af435286e9c7f23ff10ea1733415a03</Raw>
+    <X>11.21152</X>
+    <Y>5.5</Y>
+    <Index>0</Index>
+    <Mode>properties</Mode>
+  </ToolChestItem>
+</BluebeamRevuToolSet>

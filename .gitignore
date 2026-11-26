@@ -1,0 +1,14 @@
+node_modules/
+dist/
+release/
+portable-host/webview2/
+portable-host/dist.zip
+android/app/build/
+android/.gradle/
+android/build/
+.DS_Store
+Thumbs.db
+P&ID_*.pdf
+*Bukhara*
+*bukhara*
+scripts/generate-instrument-bukhara-pdf.mjs
