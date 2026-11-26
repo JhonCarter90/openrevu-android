@@ -29,6 +29,8 @@ export const CADStatusBar: React.FC = () => {
     scaleCalibration,
     snapEnabled,
     setSnapEnabled,
+    orthoEnabled,
+    setOrthoEnabled,
     viewport,
     setViewport,
     resetViewport,
@@ -291,6 +293,19 @@ export const CADStatusBar: React.FC = () => {
         >
           <Magnet size={12} strokeWidth={1.5} />
           <span>Snap {snapEnabled ? 'On' : 'Off'}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setOrthoEnabled(!orthoEnabled)}
+          className={`flex items-center gap-1 px-2 py-0.5 rounded-md border transition-colors cursor-pointer ${
+            orthoEnabled
+              ? 'bg-[#2563eb]/20 text-[#4cc2ff] border-[#2563eb]/50 font-medium'
+              : 'bg-[#19191b] border-white/[0.08] text-[#85858b] hover:text-[#ededed]'
+          }`}
+          title="Attiva o disattiva modalità Orto per linee dritte 0°/90°"
+        >
+          <span>⊥ Orto {orthoEnabled ? 'On' : 'Off'}</span>
         </button>
 
         <div className="h-4 w-px bg-white/[0.08]" />

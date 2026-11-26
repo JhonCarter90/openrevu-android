@@ -197,6 +197,8 @@ interface AppState {
   setActiveFillOpacity: (opacity: number) => void;
   snapEnabled: boolean;
   setSnapEnabled: (enabled: boolean) => void;
+  orthoEnabled: boolean;
+  setOrthoEnabled: (enabled: boolean) => void;
   mouseWheelMode: 'zoom' | 'scroll';
   setMouseWheelMode: (mode: 'zoom' | 'scroll') => void;
   toggleMouseWheelMode: () => void;
@@ -1064,6 +1066,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   setActiveFillOpacity: (opacity) => set({ activeFillOpacity: opacity }),
   snapEnabled: true,
   setSnapEnabled: (enabled) => set({ snapEnabled: enabled }),
+  orthoEnabled: false,
+  setOrthoEnabled: (enabled) => set({ orthoEnabled: enabled }),
   mouseWheelMode: ((typeof window !== 'undefined' && localStorage.getItem('openrevu_mouse_wheel_mode')) as 'zoom' | 'scroll') || 'zoom',
   setMouseWheelMode: (mode) => {
     if (typeof window !== 'undefined') localStorage.setItem('openrevu_mouse_wheel_mode', mode);

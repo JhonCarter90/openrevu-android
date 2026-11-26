@@ -77,6 +77,8 @@ export const MainToolbar: React.FC = () => {
     scaleCalibration,
     snapEnabled,
     setSnapEnabled,
+    orthoEnabled,
+    setOrthoEnabled,
     setActiveToolChestMarkup,
     selectedMarkupIds,
     markups,
@@ -231,6 +233,18 @@ export const MainToolbar: React.FC = () => {
           >
             <Magnet size={13} className={snapEnabled ? 'text-[#00ff66]' : 'text-[#777]'} />
             <span className="font-mono text-[11px]">Snap {snapEnabled ? 'ON' : 'OFF'}</span>
+          </button>
+
+          <button
+            onClick={() => setOrthoEnabled(!orthoEnabled)}
+            className={`flex items-center space-x-1 px-2 py-0.5 rounded transition border ${
+              orthoEnabled
+                ? 'bg-[#0078d4]/30 border-[#0078d4] text-[#4cc2ff]'
+                : 'bg-[#1e1e1e] border-[#3e3e42] text-[#777]'
+            }`}
+            title="Modalità Orto (linee dritte orizzontali/verticali 0°/90°)"
+          >
+            <span className="font-mono text-[11px] font-bold">⊥ Orto {orthoEnabled ? 'ON' : 'OFF'}</span>
           </button>
 
           <div className="flex items-center space-x-1 bg-[#1e1e1e] px-2 py-0.5 rounded border border-[#3c3c3c]">

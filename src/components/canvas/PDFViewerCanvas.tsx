@@ -9,6 +9,7 @@ import { ScaleManager } from '@/core/scale/scaleManager';
 import { SnapManager, SnapTarget } from '@/core/snapping/snapManager';
 import { PdfVectorSnapExtractor } from '@/core/snapping/pdfVectorSnapExtractor';
 import { HitTester, HandleHit } from '@/core/markup/hitTester';
+import { recognizeFreehandShape } from '@/core/markup/shapeRecognizer';
 import { TextLayoutHelper } from '@/core/markup/textLayoutHelper';
 import { PDFPageView, ExtractedTextItem } from './PDFPageView';
 import { BluebeamContextMenu, ContextMenuState } from './BluebeamContextMenu';
@@ -138,6 +139,7 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
     activeVerticalAlign,
     autoSizeSelectedMarkups,
     snapEnabled,
+    orthoEnabled,
     currentUser,
     markups,
     selectedMarkupIds,
@@ -1054,7 +1056,7 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
       ctx.lineWidth = activeStrokeWidth;
       ctx.setLineDash([4, 4]);
 
-      const effectivePt = isCtrlPressed
+      const effectivePt = (orthoEnabled || isCtrlPressed)
         ? snapStrictOrtho(dragStartPt, currentMousePt)
         : isShiftPressed
         ? snapOrthoAngle(dragStartPt, currentMousePt)
@@ -1282,7 +1284,7 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
       ctx.setLineDash([4, 4]);
 
       const lastPt = drawingPoints[drawingPoints.length - 1];
-      const effectivePt = isCtrlPressed
+      const effectivePt = (orthoEnabled || isCtrlPressed)
         ? snapStrictOrtho(lastPt, currentMousePt)
         : isShiftPressed
         ? snapOrthoAngle(lastPt, currentMousePt)
@@ -2304,7 +2306,7 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
     let nextPt = pt;
     if (drawingPoints.length >= 1) {
       const lastPt = drawingPoints[drawingPoints.length - 1];
-      if (e.ctrlKey || isCtrlPressed) {
+      if (e.ctrlKey || orthoEnabled || isCtrlPressed) {
         nextPt = snapStrictOrtho(lastPt, pt);
       } else if (e.shiftKey || isShiftPressed) {
         nextPt = snapOrthoAngle(lastPt, pt);
@@ -2350,7 +2352,7 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
       hatchAngle: activeHatchAngle,
     };
 
-    const effectivePt2 = isCtrlPressed
+    const effectivePt2 = (orthoEnabled || isCtrlPressed)
       ? snapStrictOrtho(p1, p2)
       : isShiftPressed
       ? snapOrthoAngle(p1, p2)
@@ -3285,23 +3287,69 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
     if (isDrawingFreehand) {
       if (freehandPoints.length >= 2) {
         const pageIndex = currentPage - 1;
-        const penMarkup: any = {
+        const baseFreehand = {
           id: crypto.randomUUID(),
-          docId,
+          docId: (docId as 'primary' | 'secondary'),
           pageIndex,
           author: currentUser,
           creationDate: new Date().toISOString(),
           modificationDate: new Date().toISOString(),
-          status: 'None',
-          type: activeTool,
-          subject: activeTool === 'highlighter' ? 'Evidenziatore' : 'Penna',
-          contents: '',
+          status: 'None' as const,
           strokeColor: activeColor,
+          fillColor: activeFillColor,
+          fillOpacity: activeFillOpacity,
           strokeWidth: activeTool === 'highlighter' ? Math.max(12, activeStrokeWidth) : Math.max(1.5, activeStrokeWidth),
           opacity: activeTool === 'highlighter' ? 0.38 : activeOpacity,
-          points: freehandPoints,
+          lineStyle: activeLineStyle,
+          lineStyleScale: activeLineStyleScale,
         };
-        addMarkup(penMarkup);
+
+        const recognized = activeTool === 'pen' ? recognizeFreehandShape(freehandPoints) : null;
+        if (recognized?.kind === 'line') {
+          const endPt = orthoEnabled
+            ? snapStrictOrtho(recognized.startPoint, recognized.endPoint)
+            : recognized.endPoint;
+          addMarkup({
+            ...baseFreehand,
+            type: 'line',
+            subject: 'Linea',
+            contents: '',
+            startPoint: recognized.startPoint,
+            endPoint: endPt,
+          } as LineMarkup);
+        } else if (recognized?.kind === 'circle') {
+          addMarkup({
+            ...baseFreehand,
+            type: 'ellipse',
+            subject: 'Cerchio',
+            contents: '',
+            boxRect: recognized.boxRect,
+          } as EllipseMarkup);
+        } else if (recognized?.kind === 'rectangle') {
+          addMarkup({
+            ...baseFreehand,
+            type: 'rectangle',
+            subject: recognized.isSquare ? 'Quadrato' : 'Rettangolo',
+            contents: '',
+            boxRect: recognized.boxRect,
+          } as RectangleMarkup);
+        } else if (recognized?.kind === 'triangle') {
+          addMarkup({
+            ...baseFreehand,
+            type: 'polygon',
+            subject: 'Triangolo',
+            contents: '',
+            points: recognized.points,
+          } as PolygonMarkup);
+        } else {
+          addMarkup({
+            ...baseFreehand,
+            type: activeTool,
+            subject: activeTool === 'highlighter' ? 'Evidenziatore' : 'Penna',
+            contents: '',
+            points: freehandPoints,
+          } as any);
+        }
       }
       setIsDrawingFreehand(false);
       setFreehandPoints([]);
