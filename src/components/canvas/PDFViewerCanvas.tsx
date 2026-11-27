@@ -1568,7 +1568,7 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
       // Zoom fluido proporzionale a deltaY (supporta sia rotellina classica che trackpad di precisione)
       const clampedDelta = Math.max(-120, Math.min(120, e.deltaY));
       const zoomFactor = Math.exp(-clampedDelta * 0.0012);
-      const newZoom = Math.min(24.0, Math.max(0.15, viewport.zoom * zoomFactor));
+      const newZoom = Math.min(24.0, Math.max(0.04, viewport.zoom * zoomFactor));
 
       const newTransform = CoordinateTransformer.zoomAtPoint(
         viewport.zoom,
@@ -3550,7 +3550,7 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
         const pinch = touchPinchRef.current;
 
         const scaleFactor = dist / pinch.startDist;
-        const nextZoom = Math.min(24.0, Math.max(0.2, pinch.startZoom * scaleFactor));
+        const nextZoom = Math.min(24.0, Math.max(0.04, pinch.startZoom * scaleFactor));
         const zoomRatio = nextZoom / pinch.startZoom;
 
         const anchorX = pinch.startMidX - rect.left;
@@ -3959,7 +3959,7 @@ export const PDFViewerCanvas: React.FC<PDFViewerCanvasProps> = ({ paneId = 'prim
           {/* Zoom rapido per questo riquadro */}
           <div className="flex items-center bg-[#181818] px-1 py-0.5 rounded border border-[#383838] font-mono text-[10px] text-[#00b7c3]">
             <button
-              onClick={() => setViewport({ zoom: Math.max(0.2, viewport.zoom * 0.85) })}
+              onClick={() => setViewport({ zoom: Math.max(0.04, viewport.zoom * 0.85) })}
               className="px-1 hover:text-white"
               title="Zoom out"
             >

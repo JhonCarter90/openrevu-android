@@ -313,7 +313,7 @@ export const CADStatusBar: React.FC = () => {
         <div className="flex items-center gap-1 font-mono tabular-nums">
           <button
             type="button"
-            onClick={() => setViewport({ zoom: Math.max(0.15, viewport.zoom * 0.85) })}
+            onClick={() => setViewport({ zoom: Math.max(0.04, viewport.zoom * 0.85) })}
             className="hover:text-[#ededed] px-1.5 py-0.5 hover:bg-[#232325] rounded cursor-pointer transition-colors"
             title="Riduci zoom (Ctrl+-)"
           >
